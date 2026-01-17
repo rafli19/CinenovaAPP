@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://rafvoid.my.id/api/v1";
+const API_BASE_URL = "https://rafvoid.my.id/api/v1";
 
 const api = axios.create({
-  baseURL: "http://rafvoid.my.id/api/v1",
+  baseURL: "https://rafvoid.my.id/api/v1",
   headers: {
     "Content-Type": "application/json",
   },
@@ -18,7 +18,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 api.interceptors.response.use(
@@ -30,7 +30,7 @@ api.interceptors.response.use(
       window.location.href = "/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

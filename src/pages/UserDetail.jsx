@@ -8,22 +8,30 @@ const UserDetail = () => {
   const { id } = useParams();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Load user detail pas pertama kali
   useEffect(() => {
     loadUserDetail();
-  }, []);
+  }, [id]);
 
-  // Load user detail dari API
   const loadUserDetail = async () => {
     setLoading(true);
-    const result = await getUserById(id);
+    setError("");
 
-    if (result.success) {
-      setUser(result.data.data);
+    try {
+      const result = await getUserById(id);
+
+      if (result.success) {
+        setUser(result.data.data);
+      } else {
+        setError(result.error || "Failed to load user");
+      }
+    } catch (err) {
+      setError("Terjadi kesalahan saat memuat data");
+      console.error("Load user detail error:", err);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
@@ -38,25 +46,38 @@ const UserDetail = () => {
           ← Back to Users
         </Link>
 
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-600 text-white p-4 rounded mb-6">{error}</div>
+        )}
+
         {loading ? (
           <div className="text-white text-center py-20">Loading...</div>
         ) : user ? (
           <div className="bg-gray-900 rounded-lg p-8 max-w-2xl mx-auto">
             <div className="flex flex-col items-center">
-              <img
-                src={user.avatar}
-                alt={user.first_name}
-                className="w-48 h-48 rounded-full object-cover mb-6"
-              />
+              {/* Avatar */}
+              <div className="w-48 h-48 rounded-full overflow-hidden mb-6">
+                <img
+                  src={
+                    user.avatar
+                      ? `https://rafvoid.my.id${user.avatar}`
+                      : "https://rafvoid.my.id/images/default-avatar.png"
+                  }
+                  alt={user.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
 
+              {/* Name */}
               <h1 className="text-white text-3xl font-bold mb-2">
-                {user.first_name} {user.last_name}
+                {user.name}
               </h1>
 
               {/* Email */}
               <p className="text-gray-400 text-lg mb-6">{user.email}</p>
 
-              {/* Info Detail */}
+              {/* Simple Info Card */}
               <div className="bg-gray-800 p-6 rounded w-full">
                 <h2 className="text-white text-xl font-bold mb-4">
                   User Information
@@ -67,12 +88,8 @@ const UserDetail = () => {
                     <span className="text-white">{user.id}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">First Name:</span>
-                    <span className="text-white">{user.first_name}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Last Name:</span>
-                    <span className="text-white">{user.last_name}</span>
+                    <span className="text-gray-400">Name:</span>
+                    <span className="text-white">{user.name}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Email:</span>
@@ -83,7 +100,9 @@ const UserDetail = () => {
             </div>
           </div>
         ) : (
-          <div className="text-white text-center py-20">User not found</div>
+          <div className="text-white text-center py-20">
+            <p className="text-xl">User not found</p>
+          </div>
         )}
       </div>
 
