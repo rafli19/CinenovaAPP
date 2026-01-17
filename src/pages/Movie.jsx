@@ -115,7 +115,7 @@ const Movie = () => {
                   <div className="bg-black aspect-[2/3] rounded mb-3 overflow-hidden">
                     {movie.poster ? (
                       <img
-                        src={`http://rafvoid.my.id${movie.poster}`}
+                        src={`https://rafvoid.my.id${movie.poster}`}
                         alt={movie.title}
                         className="w-full h-full object-cover"
                       />
