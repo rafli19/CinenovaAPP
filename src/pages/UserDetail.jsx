@@ -61,8 +61,8 @@ const UserDetail = () => {
                 <img
                   src={
                     user.avatar
-                      ? `https://rafvoid.my.id${user.avatar}`
-                      : "https://rafvoid.my.id/images/default-avatar.png"
+                      ? `https://api.rafvoid.my.id${user.avatar}`
+                      : "https://api.rafvoid.my.id/images/default-avatar.png"
                   }
                   alt={user.name}
                   className="w-full h-full object-cover"

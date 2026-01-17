@@ -24,7 +24,9 @@ const MovieDetail = () => {
     setError("");
 
     try {
-      const response = await fetch(`http://rafvoid.my.id/api/v1/movies/${id}`);
+      const response = await fetch(
+        `https://api.rafvoid.my.id/api/v1/movies/${id}`,
+      );
       const result = await response.json();
 
       if (result.success) {
@@ -45,7 +47,9 @@ const MovieDetail = () => {
     setError(""); // Reset error
 
     try {
-      const response = await fetch(`http://rafvoid.my.id/api/v1/movies?page=1`);
+      const response = await fetch(
+        `https://api.rafvoid.my.id/api/v1/movies?page=1`,
+      );
       const result = await response.json();
 
       if (result.success) {
@@ -107,7 +111,7 @@ const MovieDetail = () => {
         {/* Gambar utama sebagai img (bukan background) */}
         <div className="relative h-[700px] overflow-hidden">
           <img
-            src={`http://rafvoid.my.id${movie.poster}`}
+            src={`https://api.rafvoid.my.id${movie.poster}`}
             alt={movie.title}
             className="w-full h-full object-cover"
           />
@@ -162,7 +166,7 @@ const MovieDetail = () => {
 
           <div>
             <img
-              src={`http://rafvoid.my.id${movie.poster}`}
+              src={`https://api.rafvoid.my.id${movie.poster}`}
               alt={movie.title}
               className="w-full rounded-lg shadow-2xl"
             />
@@ -207,7 +211,7 @@ const MovieDetail = () => {
                   <div className="aspect-[2/3] bg-black overflow-hidden">
                     {similarMovie.poster ? (
                       <img
-                        src={`http://rafvoid.my.id${similarMovie.poster}`}
+                        src={`https://api.rafvoid.my.id${similarMovie.poster}`}
                         alt={similarMovie.title}
                         className="w-full h-full object-cover"
                       />

@@ -87,7 +87,7 @@ const Home = () => {
                   {index + 1}
                 </span>
                 <img
-                  src={`http://rafvoid.my.id${movie.poster}`}
+                  src={`http://api.rafvoid.my.id${movie.poster}`}
                   alt={movie.title}
                   className="w-full h-[300px] object-cover rounded-md"
                 />

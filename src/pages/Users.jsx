@@ -87,8 +87,8 @@ const Users = () => {
                       <img
                         src={
                           user.avatar
-                            ? `http://rafvoid.my.id${user.avatar}`
-                            : "http://rafvoid.my.id/images/default-avatar.png"
+                            ? `https://api.rafvoid.my.id${user.avatar}`
+                            : "https://api.rafvoid.my.id/images/default-avatar.png"
                         }
                         alt={user.name}
                         className="w-full h-full object-cover"

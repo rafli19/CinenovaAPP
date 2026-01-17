@@ -36,7 +36,7 @@ const Movie = () => {
 
       if (result.success) {
         setMovies(result.data.data || result.data);
-        setTotalPages(result.data.total_pages || 1); // ← Ganti last_page → total_pages
+        setTotalPages(result.data.total_pages || 1);
       } else {
         setError(result.error || "Failed to load movies");
       }
@@ -115,11 +115,11 @@ const Movie = () => {
                   <div className="bg-black aspect-[2/3] rounded mb-3 overflow-hidden">
                     {movie.poster ? (
                       <img
-                        src={`https://rafvoid.my.id${movie.poster.replace("/posters", "")}`}
+                        src={`https://api.rafvoid.my.id${movie.poster}`}
                         alt={movie.title}
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          e.target.src = "/no-poster.png";
+                          e.target.src = "/images/no-poster.png";
                         }}
                       />
                     ) : (
