@@ -39,36 +39,37 @@ const Home = () => {
     <div className="font-sans antialiased text-kakaes-brown bg-black overflow-x-hidden min-h-screen flex flex-col">
       <Header />
 
-      <section className="top-0 absolute w-[100vw] h-[100vh] bg-[url(https://assets.nflxext.com/ffe/siteui/vlv3/e94073b0-a056-402f-9015-16cb1e7e45c2/web/ID-en-20251110-TRIFECTA-perspective_29287120-1497-47a9-8b0a-49e7ded22f31_large.jpg)]">
-        <div className="absolute bg-black w-full h-full opacity-60"></div>
-        <div className="w-full z-10 relative">
-          <div className="w-[600px] mx-auto text-center mt-[200px] text-white">
-            <h1 className="text-[50px] relative z-10 font-bold leading-none">
+      {/* Hero Section */}
+      <section
+        className="relative w-full h-[80vh] sm:h-[90vh] bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url(https://assets.nflxext.com/ffe/siteui/vlv3/e94073b0-a056-402f-9015-16cb1e7e45c2/web/ID-en-20251110-TRIFECTA-perspective_29287120-1497-47a9-8b0a-49e7ded22f31_large.jpg)`,
+        }}
+      >
+        <div className="absolute inset-0 bg-black opacity-60"></div>
+        <div className="relative z-10 w-full h-full flex items-center justify-center">
+          <div className="text-center text-white px-4 max-w-lg">
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4">
               Unlimited movies, TV shows, and more
             </h1>
-            <br />
-            <span className="font-bold">
+            <p className="font-bold mb-4">
               Starts at IDR 54,000. Cancel anytime.
-            </span>
-            <br />
-            <br />
-            <span>
+            </p>
+            <p className="mb-6">
               Ready to watch? Enter your email to create or restart your
               membership.
-            </span>
-            <div className="mt-10">
-              <div className="inline-block bg-[#00000080] p-2 border border-gray-600 rounded-md mr-4">
-                <input
-                  type="text"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="text-white bg-transparent outline-none w-[400px]"
-                  placeholder="Email Address"
-                />
-              </div>
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2 justify-center">
+              <input
+                type="text"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="text-white bg-[#00000080] border border-gray-600 rounded-md px-4 py-2 w-full sm:w-[300px] outline-none"
+                placeholder="Email Address"
+              />
               <button
                 onClick={handleGetStarted}
-                className="cursor-pointer bg-[#e50914] px-4 py-2 rounded-md text-lg hover:bg-red-800 transition transform hover:scale-105"
+                className="bg-[#e50914] text-white px-4 py-2 rounded-md text-sm sm:text-base hover:bg-red-800 transition transform hover:scale-105 w-full sm:w-auto"
               >
                 Get Started
               </button>
@@ -77,19 +78,22 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="relative mt-[100vh]">
-        <div className="mx-auto w-[1200px]">
-          <span className="text-white font-bold text-2xl">Trending Now</span>
-          <div className="flex flex-row justify-around gap-x-10 pt-6">
+      {/* Trending Now */}
+      <section className="py-10 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-white font-bold text-xl sm:text-2xl mb-6">
+            Trending Now
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
             {trendingMovies.map((movie, index) => (
-              <div key={movie.id} className="relative">
-                <span className="absolute text-white text-[100px] font-bold bottom-0 -left-4">
+              <div key={movie.id} className="relative group">
+                <span className="absolute text-white text-2xl sm:text-4xl font-bold bottom-2 left-2 z-10">
                   {index + 1}
                 </span>
                 <img
-                  src={`http://api.rafvoid.my.id${movie.poster}`}
+                  src={`https://api.rafvoid.my.id${movie.poster}`}
                   alt={movie.title}
-                  className="w-full h-[300px] object-cover rounded-md"
+                  className="w-full h-40 sm:h-60 object-cover rounded-md transition-transform group-hover:scale-105"
                 />
               </div>
             ))}
@@ -97,12 +101,13 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="relative">
-        <div className="mx-auto w-[1200px] mt-23">
-          <span className="text-white font-bold text-2xl">
+      {/* Other Reasons to Join */}
+      <section className="py-10 px-4 sm:px-6 lg:px-8 bg-black">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-white font-bold text-xl sm:text-2xl mb-6">
             Other Reasons to Join
-          </span>
-          <div className="flex flex-row justify-around gap-x-6 pt-6">
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               {
                 title: "Enjoy on your TV",
@@ -123,14 +128,14 @@ const Home = () => {
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="relative bg-gradient-to-r from-violet-600 to-indigo-600 rounded-md p-6 text-white w-[25%] flex flex-col"
+                className="bg-gradient-to-r from-violet-600 to-indigo-600 rounded-md p-4 sm:p-6 text-white flex flex-col"
               >
-                <div className="text-xl font-bold mb-4 h-[70px] flex items-start">
+                <h3 className="text-lg sm:text-xl font-bold mb-2">
                   {item.title}
-                </div>
-                <div className="text-md text-justify flex-1 pb-20">
+                </h3>
+                <p className="text-sm sm:text-base text-justify flex-1">
                   {item.desc}
-                </div>
+                </p>
               </div>
             ))}
           </div>

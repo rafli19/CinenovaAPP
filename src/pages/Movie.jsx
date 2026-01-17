@@ -47,21 +47,21 @@ const Movie = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black flex flex-col">
+    <div className="min-h-screen bg-black flex flex-col overflow-x-hidden">
       <Header />
 
-      <div className="container mx-auto px-4 py-8 flex-grow">
+      <div className="w-full px-4 py-8 flex-grow">
         <h1 className="text-white text-3xl font-bold mb-6">Movies</h1>
 
         {/* Filter dan Search */}
-        <div className="flex gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-4 mb-6 w-full">
           <select
             value={selectedCategoryId}
             onChange={(e) => {
               setSelectedCategoryId(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-gray-800 text-white px-4 py-2 rounded border border-gray-700"
+            className="bg-gray-800 text-white px-4 py-2 rounded border border-gray-700 w-full"
           >
             <option value="">All Categories</option>
             <option value="1">Action</option>
@@ -86,7 +86,7 @@ const Movie = () => {
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-gray-800 text-white px-4 py-2 rounded border border-gray-700 flex-grow"
+            className="bg-gray-800 text-white px-4 py-2 rounded border border-gray-700 w-full"
           />
         </div>
 
@@ -105,14 +105,14 @@ const Movie = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 justify-center mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
               {movies.map((movie) => (
                 <Link
                   key={movie.id}
                   to={`/movie/${movie.id}`}
                   className="block bg-gray-900 rounded-lg p-3 hover:bg-gray-800 transition cursor-pointer w-full"
                 >
-                  <div className="bg-black aspect-[2/3] rounded mb-3 overflow-hidden">
+                  <div className="bg-black aspect-[2/3] rounded mb-3 overflow-hidden max-w-full">
                     {movie.poster ? (
                       <img
                         src={`https://api.rafvoid.my.id${movie.poster}`}
@@ -130,14 +130,14 @@ const Movie = () => {
                       />
                     )}
                   </div>
-                  <h3 className="text-white font-bold text-lg">
+                  <h3 className="text-white font-bold text-base truncate">
                     {movie.title}
                   </h3>
-                  <div className="flex justify-between text-gray-400 text-sm mt-2">
+                  <div className="flex justify-between text-gray-400 text-xs mt-2">
                     <span>{movie.category}</span>
                     <span>{movie.release_year}</span>
                   </div>
-                  <div className="text-yellow-500 text-sm mt-1">
+                  <div className="text-yellow-500 text-xs mt-1">
                     ⭐ {movie.rating}
                   </div>
                 </Link>
@@ -146,11 +146,11 @@ const Movie = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-2 flex-wrap">
+              <div className="flex justify-center items-center gap-1 flex-wrap">
                 <button
                   onClick={() => setCurrentPage(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="bg-gray-800 text-white px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700"
+                  className="bg-gray-800 text-white px-3 py-2 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700"
                 >
                   Previous
                 </button>
@@ -159,7 +159,7 @@ const Movie = () => {
                   <button
                     key={index}
                     onClick={() => setCurrentPage(index + 1)}
-                    className={`px-4 py-2 rounded min-w-[40px] ${
+                    className={`w-8 h-8 rounded flex items-center justify-center text-sm ${
                       currentPage === index + 1
                         ? "bg-red-600 text-white"
                         : "bg-gray-800 text-white hover:bg-gray-700"
@@ -172,7 +172,7 @@ const Movie = () => {
                 <button
                   onClick={() => setCurrentPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="bg-gray-800 text-white px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700"
+                  className="bg-gray-800 text-white px-3 py-2 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700"
                 >
                   Next
                 </button>
