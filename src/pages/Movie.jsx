@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Header from "../components/Navbar";
 import Footer from "../components/Footer";
 import { getMovies } from "../services/api/movies";
-import { Star } from "lucide-react";
+import { Star, Film } from "lucide-react";
 
 const Movie = () => {
   const [movies, setMovies] = useState([]);
@@ -51,8 +51,19 @@ const Movie = () => {
     <div className="min-h-screen bg-black flex flex-col overflow-x-hidden">
       <Header />
 
-      <div className="w-full px-4 py-8 flex-grow">
-        <h1 className="text-white text-3xl font-bold mb-6">Movies</h1>
+      <div className="w-full px-4 py-8 flex-grow pt-20">
+        <div className="relative mb-8">
+          <div className="absolute inset-0 bg-gradient-to-r from-black to-gray-900 rounded-lg"></div>
+          <div className="relative z-10 p-6 sm:p-8">
+            <h1 className="text-white text-4xl sm:text-5xl font-extrabold mb-2 flex items-center gap-3">
+              <Film size={36} />
+              Movies
+            </h1>
+            <p className="text-gray-300 text-sm sm:text-base">
+              Temukan film terbaru dan favoritmu dalam berbagai kategori
+            </p>
+          </div>
+        </div>
 
         {/* Filter dan Search */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6 w-full">

@@ -6,9 +6,16 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Users from "./pages/Users";
 import UserDetail from "./pages/UserDetail";
-import UserEdit from "./pages/UserEdit"; // ← tambahkan ini
+import UserEdit from "./pages/UserEdit";
+
 import Movie from "./pages/Movie";
 import MovieDetail from "./pages/MovieDetail";
+
+import FAQ from "./pages/FAQ";
+import HelpCenter from "./pages/HelpCenter";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+
 import "./index.css";
 
 const App = () => {
@@ -21,8 +28,12 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/movies" element={<Movie />} />
           <Route path="/movie/:id" element={<MovieDetail />} />
-
-          {/* User Routes */}
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/help-center" element={<HelpCenter />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/terms" element={<TermsOfService />} />{" "}
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />{" "}
           <Route
             path="/users"
             element={

@@ -2,15 +2,18 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
       "/api": {
-        target: "https://reqres.in",
+        target: "https://api.rafvoid.my.id",
         changeOrigin: true,
-        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, "/v1"),
+      },
+      "/storage": {
+        target: "https://api.rafvoid.my.id",
+        changeOrigin: true,
       },
     },
   },

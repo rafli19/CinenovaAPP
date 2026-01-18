@@ -18,7 +18,7 @@ const Footer = () => {
           <div className="text-center sm:text-left">
             <div>
               <span className="text-xl font-bold uppercase tracking-widest">
-                CineNova
+                Cinenova
               </span>
               <div className="text-gray-400 text-xs mt-1">
                 Streaming film sambil nyantai
@@ -136,7 +136,7 @@ const Footer = () => {
 
         {/* Copyright */}
         <div className="mt-6 pt-4 border-t border-gray-800 text-center text-gray-500 text-xs">
-          © 2025 CineNova. All rights reserved.
+          © 2025 Cinenova. All rights reserved.
         </div>
       </div>
     </footer>

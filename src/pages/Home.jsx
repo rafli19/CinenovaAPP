@@ -74,7 +74,7 @@ const Home = () => {
 
       {/* Hero Section */}
       <section
-        className="relative w-full h-[80vh] sm:h-[90vh] bg-cover bg-center bg-no-repeat"
+        className="relative w-full h-[80vh] sm:h-[100vh] bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: `url(https://assets.nflxext.com/ffe/siteui/vlv3/e94073b0-a056-402f-9015-16cb1e7e45c2/web/ID-en-20251110-TRIFECTA-perspective_29287120-1497-47a9-8b0a-49e7ded22f31_large.jpg)`,
         }}
@@ -193,10 +193,10 @@ const Home = () => {
       {/* Testimoni */}
       <section className="py-8 px-4 bg-gray-900 text-center">
         <p className="text-gray-300 italic max-w-2xl mx-auto">
-          “CineNova bikin nonton jadi lebih seru. Gak pake iklan, kualitas
+          “CINENOVA bikin nonton jadi lebih seru. Gak pake iklan, kualitas
           gambar oke, dan selalu ada film baru tiap minggu.”
         </p>
-        <p className="text-gray-400 mt-2">- Theodore, Bandung</p>
+        <p className="text-gray-400 mt-2">- Pria Solo, Jawa Tengah</p>
       </section>
 
       <Footer />

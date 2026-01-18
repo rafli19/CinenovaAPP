@@ -1,9 +1,7 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://api.rafvoid.my.id/v1/";
-
 const api = axios.create({
-  baseURL: "https://api.rafvoid.my.id/v1/",
+  baseURL: "/api",
   headers: {
     "Content-Type": "application/json",
   },

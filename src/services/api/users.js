@@ -76,12 +76,7 @@ export const updateUser = async (id, userData) => {
     }
   } else {
     try {
-      const payload = {
-        ...userData,
-        _method: "PUT",
-      };
-
-      const response = await api.post(`/users/${id}`, payload);
+      const response = await api.put(`/users/${id}`, userData);
 
       return {
         success: true,

@@ -1,4 +1,3 @@
-// src/pages/UserEdit.jsx
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import Header from "../components/Navbar";
@@ -11,16 +10,43 @@ const UserEdit = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    password: "",
+    password_confirmation: "",
     avatar: null,
   });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  // Load user data saat komponen mount
+  const currentUser = JSON.parse(localStorage.getItem("user"));
+
   useEffect(() => {
+    console.log("currentUser:", currentUser);
+    console.log("id from useParams:", id);
+
+    if (!currentUser) {
+      alert("Anda harus login terlebih dahulu");
+      navigate("/login");
+      return;
+    }
+
+    if (!id || id === "undefined") {
+      alert("ID user tidak ditemukan");
+      navigate("/users");
+      return;
+    }
+
+    const currentUserId = String(currentUser.id);
+    const userId = String(id);
+
+    if (currentUserId !== userId) {
+      alert("Anda hanya boleh mengedit profil Anda sendiri");
+      navigate(`/users/${currentUserId}`);
+      return;
+    }
+
     loadUser();
-  }, [id]);
+  }, [id, navigate]);
 
   const loadUser = async () => {
     try {
@@ -30,7 +56,9 @@ const UserEdit = () => {
         setFormData({
           name: user.name || "",
           email: user.email || "",
-          avatar: null, // file akan diupload ulang jika diubah
+          password: "",
+          password_confirmation: "",
+          avatar: null,
         });
       }
     } catch (err) {
@@ -52,16 +80,45 @@ const UserEdit = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitting(true);
     setError("");
 
+    if (
+      formData.password &&
+      formData.password !== formData.password_confirmation
+    ) {
+      setError("Password dan konfirmasi password tidak cocok");
+      return;
+    }
+
+    setSubmitting(true);
+
     try {
-      const result = await updateUser(id, formData);
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+      };
+
+      if (formData.password) {
+        payload.password = formData.password;
+        payload.password_confirmation = formData.password_confirmation;
+      }
+
+      if (formData.avatar) {
+        payload.avatar = formData.avatar;
+      }
+
+      const result = await updateUser(id, payload);
       if (result.success) {
-        alert("User berhasil diperbarui!");
+        const updatedUser = {
+          ...currentUser,
+          name: formData.name,
+          email: formData.email,
+        };
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        alert("Profil berhasil diperbarui!");
         navigate(`/users/${id}`);
       } else {
-        setError(result.error || "Gagal memperbarui user");
+        setError(result.error || "Gagal memperbarui profil");
       }
     } catch (err) {
       setError("Terjadi kesalahan saat menyimpan data");
@@ -92,7 +149,9 @@ const UserEdit = () => {
         </Link>
 
         <div className="bg-gray-900 rounded-lg p-6 max-w-2xl mx-auto">
-          <h1 className="text-white text-2xl font-bold mb-6">Edit User</h1>
+          <h1 className="text-white text-2xl font-bold mb-6">
+            Edit Profil Anda
+          </h1>
 
           {error && (
             <div className="bg-red-600 text-white p-3 rounded mb-4">
@@ -103,7 +162,7 @@ const UserEdit = () => {
           <form onSubmit={handleSubmit}>
             {/* Name */}
             <div className="mb-4">
-              <label className="block text-gray-400 text-sm mb-2">Name</label>
+              <label className="block text-gray-400 text-sm mb-2">Nama</label>
               <input
                 type="text"
                 name="name"
@@ -127,10 +186,40 @@ const UserEdit = () => {
               />
             </div>
 
+            {/* Password */}
+            <div className="mb-4">
+              <label className="block text-gray-400 text-sm mb-2">
+                Password Baru (opsional)
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                className="w-full bg-gray-800 text-white px-4 py-2 rounded border border-gray-700 focus:outline-none focus:border-red-600"
+                placeholder="Kosongkan jika tidak ingin ubah"
+              />
+            </div>
+
+            {/* Confirm Password */}
+            <div className="mb-6">
+              <label className="block text-gray-400 text-sm mb-2">
+                Konfirmasi Password
+              </label>
+              <input
+                type="password"
+                name="password_confirmation"
+                value={formData.password_confirmation}
+                onChange={handleInputChange}
+                className="w-full bg-gray-800 text-white px-4 py-2 rounded border border-gray-700 focus:outline-none focus:border-red-600"
+                placeholder="Ulangi password baru"
+              />
+            </div>
+
             {/* Avatar Upload */}
             <div className="mb-6">
               <label className="block text-gray-400 text-sm mb-2">
-                Avatar (opsional)
+                Ganti Avatar (opsional)
               </label>
               <input
                 type="file"
@@ -147,14 +236,14 @@ const UserEdit = () => {
                 disabled={submitting}
                 className="bg-[#e50914] text-white px-6 py-2 rounded-md hover:bg-red-700 transition disabled:opacity-50"
               >
-                {submitting ? "Saving..." : "Save Changes"}
+                {submitting ? "Menyimpan..." : "Simpan Perubahan"}
               </button>
               <button
                 type="button"
                 onClick={() => navigate(`/users/${id}`)}
                 className="bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition"
               >
-                Cancel
+                Batal
               </button>
             </div>
           </form>

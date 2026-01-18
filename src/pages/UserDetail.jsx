@@ -1,14 +1,18 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import Header from "../components/Navbar";
 import Footer from "../components/Footer";
 import { getUserById, updateUser } from "../services/api/users";
 
 const UserDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [uploading, setUploading] = useState(false);
+
+  const currentUser = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     loadUserDetail();
@@ -38,23 +42,42 @@ const UserDetail = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append("avatar", file);
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Ukuran file maksimal 2MB");
+      return;
+    }
+
+    const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+    if (!validTypes.includes(file.type)) {
+      alert("Format file harus JPG, PNG, atau GIF");
+      return;
+    }
+
+    setUploading(true);
 
     try {
       const result = await updateUser(id, { avatar: file });
+
       if (result.success) {
-        setUser((prev) => ({
-          ...prev,
-          avatar: result.data.data.avatar,
-        }));
+        navigate("/users");
+        alert("Avatar berhasil diperbarui!");
       } else {
         alert(result.error || "Gagal mengunggah avatar");
       }
     } catch (err) {
       console.error("Avatar upload error:", err);
       alert("Terjadi kesalahan saat mengunggah avatar");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
     }
+  };
+
+  const getAvatarUrl = (avatarPath) => {
+    if (!avatarPath) {
+      return "/storage/avatars/ava.png";
+    }
+    return `/storage${avatarPath}`;
   };
 
   return (
@@ -78,36 +101,42 @@ const UserDetail = () => {
         ) : user ? (
           <div className="bg-gray-900 rounded-lg p-6 sm:p-8 max-w-2xl mx-auto">
             <div className="flex flex-col items-center">
-              {/* Avatar */}
-              <div className="w-32 h-32 sm:w-48 sm:h-48 rounded-full overflow-hidden mb-4">
+              <div className="w-32 h-32 sm:w-48 sm:h-48 rounded-full overflow-hidden mb-4 relative bg-gray-800">
                 <img
-                  src={
-                    user.avatar
-                      ? `https://api.rafvoid.my.id${user.avatar}`
-                      : "https://api.rafvoid.my.id/images/default-avatar.png"
-                  }
+                  src={getAvatarUrl(user.avatar)}
                   alt={user.name}
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    e.target.src =
-                      "https://api.rafvoid.my.id/images/default-avatar.png";
+                    e.target.src = "/storage/avatars/ava.png";
                   }}
                 />
+                {uploading && (
+                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                    <div className="text-white text-sm">Uploading...</div>
+                  </div>
+                )}
               </div>
 
-              <label
-                htmlFor="avatar-input"
-                className="cursor-pointer bg-[#e50914] text-white px-4 py-2 rounded-md text-sm hover:bg-red-700 transition mb-4"
-              >
-                Ubah Avatar
-              </label>
-              <input
-                id="avatar-input"
-                type="file"
-                accept="image/*"
-                onChange={handleAvatarChange}
-                className="hidden"
-              />
+              {currentUser && currentUser.id === user.id && (
+                <>
+                  <label
+                    htmlFor="avatar-input"
+                    className={`cursor-pointer bg-[#e50914] text-white px-4 py-2 rounded-md text-sm hover:bg-red-700 transition mb-4 ${
+                      uploading ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  >
+                    {uploading ? "Uploading..." : "Ubah Avatar"}
+                  </label>
+                  <input
+                    id="avatar-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    className="hidden"
+                    disabled={uploading}
+                  />
+                </>
+              )}
 
               <h1 className="text-white text-2xl sm:text-3xl font-bold mb-2">
                 {user.name}
@@ -115,12 +144,14 @@ const UserDetail = () => {
 
               <p className="text-gray-400 text-lg mb-6">{user.email}</p>
 
-              <Link
-                to={`/users/${user.id}/edit`}
-                className="bg-gray-700 text-white px-4 py-2 rounded-md text-sm hover:bg-gray-600 transition mb-6"
-              >
-                Edit Profile Lengkap
-              </Link>
+              {currentUser && currentUser.id === user.id && (
+                <Link
+                  to={`/users/${user.id}/edit`}
+                  className="bg-gray-700 text-white px-4 py-2 rounded-md text-sm hover:bg-gray-600 transition mb-6"
+                >
+                  Edit Profile Lengkap
+                </Link>
+              )}
 
               <div className="bg-gray-800 p-6 rounded w-full">
                 <h2 className="text-white text-xl font-bold mb-4">

@@ -21,6 +21,7 @@ const Login = () => {
 
       if (result.success) {
         login({
+          id: result.data.user?.id,
           email,
           name: result.data.user?.name || email,
           token: result.data.token,

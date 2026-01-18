@@ -57,7 +57,7 @@ const MovieDetail = () => {
 
         const filtered = allMovies
           .filter((movie) => movie.id !== parseInt(id))
-          .slice(0, 5);
+          .slice(0, 5); // Ambil 5 film serupa
 
         setSimilarMovies(filtered);
       } else {
@@ -199,8 +199,9 @@ const MovieDetail = () => {
               No similar movies found
             </div>
           ) : (
-            <div className="grid grid-cols-5 gap-4">
-              {similarMovies.map((similarMovie) => (
+            <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
+              {/* Tampilkan 3 film pertama di semua layar */}
+              {similarMovies.slice(0, 3).map((similarMovie) => (
                 <Link
                   key={similarMovie.id}
                   to={`/movie/${similarMovie.id}`}
@@ -222,7 +223,10 @@ const MovieDetail = () => {
                     )}
                   </div>
                   <div className="p-3">
-                    <h3 className="text-white font-bold truncate">
+                    <h3
+                      className="text-white font-bold text-xs sm:text-sm line-clamp-1"
+                      title={similarMovie.title}
+                    >
                       {similarMovie.title}
                     </h3>
                     <p className="text-gray-400 text-sm">
@@ -231,6 +235,46 @@ const MovieDetail = () => {
                   </div>
                 </Link>
               ))}
+
+              {/* Tampilkan 2 film tambahan hanya di medium ke atas (desktop) */}
+              {similarMovies.length > 3 && (
+                <>
+                  {similarMovies.slice(3, 5).map((similarMovie) => (
+                    <Link
+                      key={similarMovie.id}
+                      to={`/movie/${similarMovie.id}`}
+                      className="hidden md:block bg-gray-900 rounded-lg overflow-hidden hover:scale-105 transition cursor-pointer"
+                    >
+                      <div className="aspect-[2/3] bg-black overflow-hidden">
+                        {similarMovie.poster ? (
+                          <img
+                            src={`https://api.rafvoid.my.id${similarMovie.poster}`}
+                            alt={similarMovie.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <img
+                            src="/images/no-poster.jpg"
+                            alt="No poster available"
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                      </div>
+                      <div className="p-3">
+                        <h3
+                          className="text-white font-bold text-xs sm:text-sm line-clamp-1"
+                          title={similarMovie.title}
+                        >
+                          {similarMovie.title}
+                        </h3>
+                        <p className="text-gray-400 text-sm">
+                          {similarMovie.release_year}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </>
+              )}
             </div>
           )}
         </div>
