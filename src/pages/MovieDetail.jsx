@@ -24,9 +24,7 @@ const MovieDetail = () => {
     setError("");
 
     try {
-      const response = await fetch(
-        `https://api.rafvoid.my.id/api/v1/movies/${id}`,
-      );
+      const response = await fetch(`https://api.rafvoid.my.id/v1/movies/${id}`);
       const result = await response.json();
 
       if (result.success) {
@@ -48,7 +46,7 @@ const MovieDetail = () => {
 
     try {
       const response = await fetch(
-        `https://api.rafvoid.my.id/api/v1/movies?page=1`,
+        `https://api.rafvoid.my.id/v1/movies?page=1`,
       );
       const result = await response.json();
 
@@ -57,7 +55,7 @@ const MovieDetail = () => {
 
         const filtered = allMovies
           .filter((movie) => movie.id !== parseInt(id))
-          .slice(0, 5); // Ambil 5 film serupa
+          .slice(0, 5);
 
         setSimilarMovies(filtered);
       } else {
