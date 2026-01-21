@@ -11,69 +11,85 @@ const MovieDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    loadMovieDetail();
-  }, [id]);
+  const getYouTubeVideoId = (url) => {
+    if (!url) return null;
+
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/,
+      /youtube\.com\/embed\/([^&\n?#]+)/,
+      /youtube\.com\/v\/([^&\n?#]+)/,
+    ];
+
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+
+    return null;
+  };
+
+  const getYouTubeEmbedUrl = (url) => {
+    const videoId = getYouTubeVideoId(url);
+    if (!videoId) return null;
+    return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`;
+  };
 
   useEffect(() => {
+    const loadMovieDetail = async () => {
+      setLoading(true);
+      setError("");
+
+      try {
+        const response = await fetch(
+          `https://api.rafvoid.my.id/v1/movies/${id}`,
+        );
+        const result = await response.json();
+
+        if (result.success) {
+          setMovie(result.data);
+        } else {
+          setError("Failed to load movie details");
+        }
+      } catch (err) {
+        setError("Terjadi kesalahan saat memuat data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const loadSimilarMovies = async () => {
+      try {
+        const response = await fetch(
+          `https://api.rafvoid.my.id/v1/movies?page=1`,
+        );
+        const result = await response.json();
+
+        if (result.success) {
+          const allMovies = result.data.data || result.data;
+          const filtered = allMovies
+            .filter((movie) => movie.id !== parseInt(id))
+            .slice(0, 5);
+          setSimilarMovies(filtered);
+        }
+      } catch (err) {
+        console.error("Load similar movies error:", err);
+      }
+    };
+
+    loadMovieDetail();
     loadSimilarMovies();
   }, [id]);
 
-  const loadMovieDetail = async () => {
-    setLoading(true);
-    setError("");
-
-    try {
-      const response = await fetch(`https://api.rafvoid.my.id/v1/movies/${id}`);
-      const result = await response.json();
-
-      if (result.success) {
-        setMovie(result.data);
-      } else {
-        setError("Failed to load movie details");
-      }
-    } catch (err) {
-      setError("Terjadi kesalahan saat memuat data");
-      console.error("Load movie detail error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadSimilarMovies = async () => {
-    setLoading(true);
-    setError("");
-
-    try {
-      const response = await fetch(
-        `https://api.rafvoid.my.id/v1/movies?page=1`,
-      );
-      const result = await response.json();
-
-      if (result.success) {
-        const allMovies = result.data.data || result.data;
-
-        const filtered = allMovies
-          .filter((movie) => movie.id !== parseInt(id))
-          .slice(0, 5);
-
-        setSimilarMovies(filtered);
-      } else {
-        setError("Failed to load similar movies");
-      }
-    } catch (err) {
-      setError("Terjadi kesalahan saat memuat film serupa");
-      console.error("Load similar movies error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   if (loading && !movie) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-black flex flex-col">
         <Header />
-        <div className="text-white text-2xl">Loading...</div>
+        <div className="flex-grow flex items-center justify-center">
+          <div className="text-white text-2xl">Loading...</div>
+        </div>
+        <Footer />
       </div>
     );
   }
@@ -100,11 +116,12 @@ const MovieDetail = () => {
     );
   }
 
+  const trailerEmbedUrl = getYouTubeEmbedUrl(movie.trailer_url);
+
   return (
     <div className="min-h-screen bg-black flex flex-col">
       <Header />
 
-      {/* Hero Section */}
       <div className="relative">
         <div className="relative h-[700px] overflow-hidden">
           <img
@@ -130,7 +147,7 @@ const MovieDetail = () => {
                 {movie.category}
               </span>
               <span className="text-lg">
-                {movie.duration_minutes || "N/A"} {" minutes"}
+                {movie.duration_minutes || "N/A"} minutes
               </span>
             </div>
           </div>
@@ -169,14 +186,16 @@ const MovieDetail = () => {
           </div>
         </div>
 
-        {movie.trailer_url && (
+        {trailerEmbedUrl && (
           <div className="mt-12">
             <h2 className="text-white text-2xl font-bold mb-4">Trailer</h2>
-            <div className="aspect-video bg-gray-900 rounded-lg overflow-hidden">
+            <div className="relative aspect-video bg-gray-900 rounded-lg overflow-hidden shadow-2xl">
               <iframe
-                src={movie.trailer_url}
-                title="Movie Trailer"
+                src={trailerEmbedUrl}
+                title={`${movie.title} Trailer`}
                 className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                loading="lazy"
                 allowFullScreen
               ></iframe>
             </div>
@@ -186,19 +205,12 @@ const MovieDetail = () => {
         <div className="mt-12">
           <h2 className="text-white text-2xl font-bold mb-6">More Like This</h2>
 
-          {loading ? (
-            <div className="text-white text-center py-10">
-              Loading similar movies...
-            </div>
-          ) : error ? (
-            <div className="text-red-500 text-center py-10">{error}</div>
-          ) : similarMovies.length === 0 ? (
+          {similarMovies.length === 0 ? (
             <div className="text-gray-400 text-center py-10">
               No similar movies found
             </div>
           ) : (
             <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
-              {/* Tampilkan 3 film pertama di semua layar */}
               {similarMovies.slice(0, 3).map((similarMovie) => (
                 <Link
                   key={similarMovie.id}
@@ -213,11 +225,9 @@ const MovieDetail = () => {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <img
-                        src="/images/no-poster.jpg"
-                        alt="No poster available"
-                        className="w-full h-full object-cover"
-                      />
+                      <div className="w-full h-full flex items-center justify-center bg-gray-800">
+                        <span className="text-gray-500 text-sm">No Poster</span>
+                      </div>
                     )}
                   </div>
                   <div className="p-3">
@@ -234,45 +244,41 @@ const MovieDetail = () => {
                 </Link>
               ))}
 
-              {/* Tampilkan 2 film tambahan hanya di medium ke atas (desktop) */}
-              {similarMovies.length > 3 && (
-                <>
-                  {similarMovies.slice(3, 5).map((similarMovie) => (
-                    <Link
-                      key={similarMovie.id}
-                      to={`/movie/${similarMovie.id}`}
-                      className="hidden md:block bg-gray-900 rounded-lg overflow-hidden hover:scale-105 transition cursor-pointer"
-                    >
-                      <div className="aspect-[2/3] bg-black overflow-hidden">
-                        {similarMovie.poster ? (
-                          <img
-                            src={`https://api.rafvoid.my.id${similarMovie.poster}`}
-                            alt={similarMovie.title}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <img
-                            src="/images/no-poster.jpg"
-                            alt="No poster available"
-                            className="w-full h-full object-cover"
-                          />
-                        )}
-                      </div>
-                      <div className="p-3">
-                        <h3
-                          className="text-white font-bold text-xs sm:text-sm line-clamp-1"
-                          title={similarMovie.title}
-                        >
-                          {similarMovie.title}
-                        </h3>
-                        <p className="text-gray-400 text-sm">
-                          {similarMovie.release_year}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </>
-              )}
+              {similarMovies.length > 3 &&
+                similarMovies.slice(3, 5).map((similarMovie) => (
+                  <Link
+                    key={similarMovie.id}
+                    to={`/movie/${similarMovie.id}`}
+                    className="hidden md:block bg-gray-900 rounded-lg overflow-hidden hover:scale-105 transition cursor-pointer"
+                  >
+                    <div className="aspect-[2/3] bg-black overflow-hidden">
+                      {similarMovie.poster ? (
+                        <img
+                          src={`https://api.rafvoid.my.id${similarMovie.poster}`}
+                          alt={similarMovie.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-800">
+                          <span className="text-gray-500 text-sm">
+                            No Poster
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <h3
+                        className="text-white font-bold text-xs sm:text-sm line-clamp-1"
+                        title={similarMovie.title}
+                      >
+                        {similarMovie.title}
+                      </h3>
+                      <p className="text-gray-400 text-sm">
+                        {similarMovie.release_year}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
             </div>
           )}
         </div>

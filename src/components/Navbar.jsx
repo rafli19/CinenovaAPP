@@ -96,10 +96,9 @@ const Navbar = () => {
                 to="/users"
                 className="text-white hover:text-gray-300 font-medium transition"
               >
-                Users
+                My Profile
               </Link>
             )}
-
             {user ? (
               <div className="flex items-center gap-4">
                 <span className="text-gray-300 text-sm">Hai, {user.name}!</span>
@@ -150,7 +149,7 @@ const Navbar = () => {
                 className="block text-white hover:text-gray-300 font-medium transition"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Users
+                My Profile
               </Link>
             )}
 

@@ -8,6 +8,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -18,6 +19,8 @@ const Register = () => {
       setError("Password dan konfirmasi password tidak cocok.");
       return;
     }
+
+    setIsLoading(true);
 
     try {
       const result = await registerUser(
@@ -36,6 +39,8 @@ const Register = () => {
     } catch (err) {
       setError("Terjadi kesalahan. Silakan coba lagi.");
       console.error("Register error:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -59,7 +64,9 @@ const Register = () => {
               onChange={(e) => setName(e.target.value)}
               className="w-full bg-gray-800 text-white p-3 rounded border border-gray-700 focus:outline-none focus:border-red-600"
               placeholder="Enter your name"
+              autoComplete="name"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -71,11 +78,13 @@ const Register = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-gray-800 text-white p-3 rounded border border-gray-700 focus:outline-none focus:border-red-600"
               placeholder="Enter your email"
+              autoComplete="email"
               required
+              disabled={isLoading}
             />
           </div>
 
-          <div className="mb-6">
+          <div className="mb-4">
             <label className="text-gray-400 text-sm block mb-2">Password</label>
             <input
               type="password"
@@ -83,7 +92,9 @@ const Register = () => {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-gray-800 text-white p-3 rounded border border-gray-700 focus:outline-none focus:border-red-600"
               placeholder="Enter your password"
+              autoComplete="new-password"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -97,15 +108,18 @@ const Register = () => {
               onChange={(e) => setPasswordConfirmation(e.target.value)}
               className="w-full bg-gray-800 text-white p-3 rounded border border-gray-700 focus:outline-none focus:border-red-600"
               placeholder="Confirm your password"
+              autoComplete="new-password"
               required
+              disabled={isLoading}
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-red-600 text-white py-3 rounded hover:bg-red-700 transition"
+            disabled={isLoading}
+            className="w-full bg-red-600 text-white py-3 rounded hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Register
+            {isLoading ? "Registering..." : "Register"}
           </button>
         </form>
 

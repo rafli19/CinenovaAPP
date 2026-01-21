@@ -40,8 +40,22 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // ⭐ TAMBAHKAN: Function untuk update user profile
+  const updateUser = (updatedUserData) => {
+    setUser(updatedUserData);
+    localStorage.setItem("user", JSON.stringify(updatedUserData));
+  };
+
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        isLoggedIn,
+        user,
+        setUser: updateUser, // ⭐ EXPOSE setUser
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

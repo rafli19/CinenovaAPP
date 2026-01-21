@@ -92,7 +92,7 @@ const Footer = () => {
                 FAQ
               </Link>
               <Link
-                to="/help"
+                to="/help-center"
                 className="text-white text-sm hover:text-red-600 transition"
               >
                 Help Center

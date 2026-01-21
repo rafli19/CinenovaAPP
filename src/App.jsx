@@ -5,8 +5,6 @@ import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Users from "./pages/Users";
-import UserDetail from "./pages/UserDetail";
-import UserEdit from "./pages/UserEdit";
 
 import Movie from "./pages/Movie";
 import MovieDetail from "./pages/MovieDetail";
@@ -39,22 +37,6 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <Users />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/users/:id"
-            element={
-              <ProtectedRoute>
-                <UserDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/users/:id/edit"
-            element={
-              <ProtectedRoute>
-                <UserEdit />
               </ProtectedRoute>
             }
           />
