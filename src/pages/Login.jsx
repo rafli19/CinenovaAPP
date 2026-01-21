@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../services/api/auth";
@@ -6,14 +6,24 @@ import { loginUser } from "../services/api/auth";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [modal, setModal] = useState({ show: false, type: "", message: "" }); // 'success' | 'error'
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  // Tutup modal otomatis setelah 3 detik
+  useEffect(() => {
+    let timer;
+    if (modal.show) {
+      timer = setTimeout(() => {
+        setModal({ show: false, type: "", message: "" });
+      }, 3000);
+    }
+    return () => clearTimeout(timer);
+  }, [modal.show]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setIsLoading(true);
 
     try {
@@ -26,28 +36,66 @@ const Login = () => {
           name: result.data.user?.name || email,
           token: result.data.token,
         });
-        navigate("/movies");
+        setModal({
+          show: true,
+          type: "success",
+          message: "Login berhasil! Mengarahkan ke dashboard...",
+        });
+        setTimeout(() => navigate("/movies"), 1500);
       } else {
-        setError(result.error || "Login gagal. Coba lagi!");
+        setModal({
+          show: true,
+          type: "error",
+          message: result.error || "Login gagal. Coba lagi!",
+        });
       }
     } catch (err) {
-      setError("Terjadi kesalahan. Silakan coba lagi.");
+      setModal({
+        show: true,
+        type: "error",
+        message: "Terjadi kesalahan. Silakan coba lagi.",
+      });
       console.error("Login error:", err);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const closeModal = () => {
+    setModal({ show: false, type: "", message: "" });
+  };
+
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
+    <div className="min-h-screen bg-black flex items-center justify-center relative">
+      {/* Modal */}
+      {modal.show && (
+        <div
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
+          onClick={closeModal}
+        >
+          <div
+            className={`max-w-md w-full p-6 rounded-lg shadow-lg ${
+              modal.type === "success" ? "bg-green-800" : "bg-red-800"
+            } text-white`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-xl font-bold mb-2">
+              {modal.type === "success" ? "Berhasil!" : "Gagal!"}
+            </h3>
+            <p>{modal.message}</p>
+            <button
+              onClick={closeModal}
+              className="mt-4 text-sm underline hover:no-underline"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Form Login */}
       <div className="bg-gray-900 p-8 rounded-lg w-[400px]">
         <h2 className="text-white text-2xl font-bold mb-6">Login</h2>
-
-        {error && (
-          <div className="bg-red-600 text-white p-3 rounded mb-4 text-sm">
-            {error}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">

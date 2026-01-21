@@ -40,7 +40,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ⭐ TAMBAHKAN: Function untuk update user profile
   const updateUser = (updatedUserData) => {
     setUser(updatedUserData);
     localStorage.setItem("user", JSON.stringify(updatedUserData));
@@ -51,7 +50,7 @@ export const AuthProvider = ({ children }) => {
       value={{
         isLoggedIn,
         user,
-        setUser: updateUser, // ⭐ EXPOSE setUser
+        setUser: updateUser,
         login,
         logout,
       }}
