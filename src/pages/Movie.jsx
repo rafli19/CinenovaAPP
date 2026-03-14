@@ -115,7 +115,7 @@ const Movie = () => {
                   <div className="bg-black aspect-[2/3] rounded mb-3 overflow-hidden">
                     {movie.poster ? (
                       <img
-                        src={`https://rafvoid.my.id${movie.poster.replace("/posters", "")}`}
+                        src={`https://rafvoid.my.id  ${movie.poster.replace("/posters", "")}`}
                         alt={movie.title}
                         className="w-full h-full object-cover"
                         onError={(e) => {

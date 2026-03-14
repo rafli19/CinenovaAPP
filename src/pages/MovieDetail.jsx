@@ -3,6 +3,18 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import Header from "../components/Navbar";
 import Footer from "../components/Footer";
 
+const getYoutubeEmbedUrl = (url) => {
+  if (!url) return null;
+  if (url.includes("/embed/")) return url;
+  const match = url.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
+  return match ? `https://www.youtube.com/embed/${match[1]}` : null;
+};
+
+const getPosterUrl = (poster) => {
+  if (!poster) return "/images/no-poster.jpg";
+  return `https://api.rafvoid.my.id/storage${poster.replace("/storage", "")}`;
+};
+
 const MovieDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -24,7 +36,7 @@ const MovieDetail = () => {
     setError("");
 
     try {
-      const response = await fetch(`http://rafvoid.my.id/api/v1/movies/${id}`);
+      const response = await fetch(`https://api.rafvoid.my.id/v1/movies/${id}`);
       const result = await response.json();
 
       if (result.success) {
@@ -42,19 +54,19 @@ const MovieDetail = () => {
 
   const loadSimilarMovies = async () => {
     setLoading(true);
-    setError(""); // Reset error
+    setError("");
 
     try {
-      const response = await fetch(`http://rafvoid.my.id/api/v1/movies?page=1`);
+      const response = await fetch(
+        `https://api.rafvoid.my.id/v1/movies?page=1`,
+      );
       const result = await response.json();
 
       if (result.success) {
         const allMovies = result.data.data || result.data;
-
         const filtered = allMovies
           .filter((movie) => movie.id !== parseInt(id))
           .slice(0, 4);
-
         setSimilarMovies(filtered);
       } else {
         setError("Failed to load similar movies");
@@ -104,23 +116,20 @@ const MovieDetail = () => {
 
       {/* Hero Section */}
       <div className="relative">
-        {/* Gambar utama sebagai img (bukan background) */}
         <div className="relative h-[700px] overflow-hidden">
           <img
-            src={`http://rafvoid.my.id${movie.poster}`}
+            src={getPosterUrl(movie.poster)}
             alt={movie.title}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
         </div>
 
-        {/* Konten teks di atas gambar */}
         <div className="absolute bottom-0 left-0 right-0 p-12">
           <div className="max-w-7xl mx-auto">
             <h1 className="text-white text-6xl font-bold mb-4">
               {movie.title}
             </h1>
-
             <div className="flex items-center gap-4 text-white mb-6">
               <span className="text-green-500 font-bold text-xl">
                 {movie.rating ? `${movie.rating}/10` : "N/A"}
@@ -130,7 +139,8 @@ const MovieDetail = () => {
                 {movie.category}
               </span>
               <span className="text-lg">
-                {movie.duration_minutes || "N/A"} {" minutes"}
+                {movie.duration_minutes || "N/A"}
+                {" minutes"}
               </span>
             </div>
           </div>
@@ -162,7 +172,7 @@ const MovieDetail = () => {
 
           <div>
             <img
-              src={`http://rafvoid.my.id${movie.poster}`}
+              src={getPosterUrl(movie.poster)}
               alt={movie.title}
               className="w-full rounded-lg shadow-2xl"
             />
@@ -174,10 +184,11 @@ const MovieDetail = () => {
             <h2 className="text-white text-2xl font-bold mb-4">Trailer</h2>
             <div className="aspect-video bg-gray-900 rounded-lg overflow-hidden">
               <iframe
-                src={movie.trailer_url}
+                src={getYoutubeEmbedUrl(movie.trailer_url)}
                 title="Movie Trailer"
                 className="w-full h-full"
                 allowFullScreen
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               ></iframe>
             </div>
           </div>
@@ -205,19 +216,14 @@ const MovieDetail = () => {
                   className="block bg-gray-900 rounded-lg overflow-hidden hover:scale-105 transition cursor-pointer"
                 >
                   <div className="aspect-[2/3] bg-black overflow-hidden">
-                    {similarMovie.poster ? (
-                      <img
-                        src={`http://rafvoid.my.id${similarMovie.poster}`}
-                        alt={similarMovie.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <img
-                        src="/images/no-poster.jpg"
-                        alt="No poster available"
-                        className="w-full h-full object-cover"
-                      />
-                    )}
+                    <img
+                      src={getPosterUrl(similarMovie.poster)}
+                      alt={similarMovie.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = "/images/no-poster.jpg";
+                      }}
+                    />
                   </div>
                   <div className="p-3">
                     <h3 className="text-white font-bold truncate">
