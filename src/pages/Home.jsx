@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Header from "../components/Navbar";
 import Footer from "../components/Footer";
 import { getMovies } from "../services/api/movies";
@@ -6,12 +7,29 @@ import { getMovies } from "../services/api/movies";
 const Home = () => {
   const [email, setEmail] = useState("");
   const [trendingMovies, setTrendingMovies] = useState([]);
+  const [newReleases, setNewReleases] = useState([]);
 
   useEffect(() => {
     loadTrendingMovies();
+    loadNewReleases();
   }, []);
 
   const loadTrendingMovies = async () => {
+    try {
+      const result = await getMovies({
+        page: 1,
+        sort_by: "rating",
+        order: "desc",
+      });
+      if (result.success) {
+        setTrendingMovies(result.data.data.slice(0, 6));
+      }
+    } catch (err) {
+      console.error("Failed to fetch trending movies:", err);
+    }
+  };
+
+  const loadNewReleases = async () => {
     try {
       const result = await getMovies({
         page: 1,
@@ -19,10 +37,10 @@ const Home = () => {
         order: "desc",
       });
       if (result.success) {
-        setTrendingMovies(result.data.data.slice(0, 5));
+        setNewReleases(result.data.data.slice(0, 6));
       }
     } catch (err) {
-      console.error("Failed to fetch trending movies:", err);
+      console.error("Failed to fetch new releases:", err);
     }
   };
 
@@ -35,40 +53,56 @@ const Home = () => {
     setEmail("");
   };
 
+  const genres = [
+    { name: "Action", id: "1" },
+    { name: "Sci-Fi", id: "2" },
+    { name: "Thriller", id: "3" },
+    { name: "Adventure", id: "4" },
+    { name: "Comedy", id: "5" },
+    { name: "Drama", id: "6" },
+    { name: "Horror", id: "7" },
+    { name: "Romance", id: "8" },
+    { name: "Animation", id: "9" },
+    { name: "Documentary", id: "10" },
+    { name: "Fantasy", id: "11" },
+    { name: "Cyberpunk", id: "12" },
+  ];
+
   return (
-    <div className="font-sans antialiased text-kakaes-brown bg-black overflow-x-hidden min-h-screen flex flex-col">
+    <div className="font-sans antialiased text-white bg-black overflow-x-hidden min-h-screen flex flex-col">
       <Header />
 
-      <section className="top-0 absolute w-[100vw] h-[100vh] bg-[url(https://assets.nflxext.com/ffe/siteui/vlv3/e94073b0-a056-402f-9015-16cb1e7e45c2/web/ID-en-20251110-TRIFECTA-perspective_29287120-1497-47a9-8b0a-49e7ded22f31_large.jpg)]">
-        <div className="absolute bg-black w-full h-full opacity-60"></div>
-        <div className="w-full z-10 relative">
-          <div className="w-[600px] mx-auto text-center mt-[200px] text-white">
-            <h1 className="text-[50px] relative z-10 font-bold leading-none">
+      {/* Hero Section */}
+      <section
+        className="relative w-full h-[80vh] sm:h-[100vh] bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url(https://assets.nflxext.com/ffe/siteui/vlv3/e94073b0-a056-402f-9015-16cb1e7e45c2/web/ID-en-20251110-TRIFECTA-perspective_29287120-1497-47a9-8b0a-49e7ded22f31_large.jpg)`,
+        }}
+      >
+        <div className="absolute inset-0 bg-black opacity-60"></div>
+        <div className="relative z-10 w-full h-full flex items-center justify-center">
+          <div className="text-center text-white px-4 max-w-lg">
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4">
               Unlimited movies, TV shows, and more
             </h1>
-            <br />
-            <span className="font-bold">
+            <p className="font-bold mb-4">
               Starts at IDR 54,000. Cancel anytime.
-            </span>
-            <br />
-            <br />
-            <span>
+            </p>
+            <p className="mb-6">
               Ready to watch? Enter your email to create or restart your
               membership.
-            </span>
-            <div className="mt-10">
-              <div className="inline-block bg-[#00000080] p-2 border border-gray-600 rounded-md mr-4">
-                <input
-                  type="text"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="text-white bg-transparent outline-none w-[400px]"
-                  placeholder="Email Address"
-                />
-              </div>
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2 justify-center">
+              <input
+                type="text"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="text-white bg-[#00000080] border border-gray-600 rounded-md px-4 py-2 w-full sm:w-[300px] outline-none"
+                placeholder="Email Address"
+              />
               <button
                 onClick={handleGetStarted}
-                className="cursor-pointer bg-[#e50914] px-4 py-2 rounded-md text-lg hover:bg-red-800 transition transform hover:scale-105"
+                className="bg-[#e50914] text-white px-4 py-2 rounded-md text-sm sm:text-base hover:bg-red-800 transition transform hover:scale-105 w-full sm:w-auto"
               >
                 Get Started
               </button>
@@ -77,64 +111,92 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="relative mt-[100vh]">
-        <div className="mx-auto w-[1200px]">
-          <span className="text-white font-bold text-2xl">Trending Now</span>
-          <div className="flex flex-row justify-around gap-x-10 pt-6">
+      {/* Trending Now */}
+      <section className="py-10 px-4 sm:px-6 lg:px-8 bg-black">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-white font-bold text-xl sm:text-2xl mb-6">
+            Trending Now
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
             {trendingMovies.map((movie, index) => (
-              <div key={movie.id} className="relative">
-                <span className="absolute text-white text-[100px] font-bold bottom-0 -left-4">
-                  {index + 1}
-                </span>
-                <img
-                  src={`http://rafvoid.my.id${movie.poster}`}
-                  alt={movie.title}
-                  className="w-full h-[300px] object-cover rounded-md"
-                />
-              </div>
+              <Link key={movie.id} to={`/movie/${movie.id}`} className="group">
+                <div className="relative">
+                  <span className="absolute text-white text-2xl sm:text-4xl font-bold bottom-2 left-2 z-10">
+                    {index + 1}
+                  </span>
+                  <img
+                    src={`https://api.rafvoid.my.id${movie.poster}`}
+                    alt={movie.title}
+                    className="w-full h-40 sm:h-60 object-cover rounded-md transition-transform group-hover:scale-105 bg-gray-900"
+                    onError={(e) => {
+                      e.target.src = "/images/no-poster.png";
+                    }}
+                    loading="lazy"
+                  />
+                </div>
+                <p className="text-white text-xs mt-1 truncate">
+                  {movie.title}
+                </p>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="relative">
-        <div className="mx-auto w-[1200px] mt-23">
-          <span className="text-white font-bold text-2xl">
-            Other Reasons to Join
-          </span>
-          <div className="flex flex-row justify-around gap-x-6 pt-6">
-            {[
-              {
-                title: "Enjoy on your TV",
-                desc: "Watch on Smart TVs, Playstation, Xbox, Chromecast, Apple TV, Blu-ray players, and more.",
-              },
-              {
-                title: "Download this series to watch it offline.",
-                desc: "Save your favorites easily so you always have TV shows and movies to watch.",
-              },
-              {
-                title: "Watch anywhere",
-                desc: "Stream unlimited movies and TV series on your phone, tablet, laptop, and TV.",
-              },
-              {
-                title: "Create a profile for your child",
-                desc: "Send your kids on adventures with their favorite characters in a world created just for them — free with your membership.",
-              },
-            ].map((item, idx) => (
-              <div
-                key={idx}
-                className="relative bg-gradient-to-r from-violet-600 to-indigo-600 rounded-md p-6 text-white w-[25%] flex flex-col"
-              >
-                <div className="text-xl font-bold mb-4 h-[70px] flex items-start">
-                  {item.title}
-                </div>
-                <div className="text-md text-justify flex-1 pb-20">
-                  {item.desc}
-                </div>
-              </div>
+      {/* New Releases */}
+      <section className="py-10 px-4 sm:px-6 lg:px-8 bg-black">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-white font-bold text-xl sm:text-2xl mb-6">
+            New Releases
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+            {newReleases.map((movie) => (
+              <Link key={movie.id} to={`/movie/${movie.id}`} className="group">
+                <img
+                  src={`https://api.rafvoid.my.id${movie.poster}`}
+                  alt={movie.title}
+                  className="w-full h-40 sm:h-60 object-cover rounded-md transition-transform group-hover:scale-105 bg-gray-900"
+                  onError={(e) => {
+                    e.target.src = "/images/no-poster.png";
+                  }}
+                  loading="lazy"
+                />
+                <p className="text-white text-xs mt-1 truncate">
+                  {movie.title}
+                </p>
+              </Link>
             ))}
           </div>
         </div>
+      </section>
+
+      {/* Browse by Genre */}
+      <section className="py-10 px-4 sm:px-6 lg:px-8 bg-black">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-white font-bold text-xl sm:text-2xl mb-6">
+            Browse by Genre
+          </h2>
+          <div className="flex flex-wrap gap-3 justify-center">
+            {genres.map((genre) => (
+              <Link
+                key={genre.id}
+                to={`/movies?category=${genre.id}`}
+                className="bg-gray-900 hover:bg-red-600 text-white px-4 py-2 rounded-full text-sm transition"
+              >
+                {genre.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimoni */}
+      <section className="py-8 px-4 bg-gray-900 text-center">
+        <p className="text-gray-300 italic max-w-2xl mx-auto">
+          “CINENOVA bikin nonton jadi lebih seru. Gak pake iklan, kualitas
+          gambar oke, dan selalu ada film baru tiap minggu.”
+        </p>
+        <p className="text-gray-400 mt-2">- Pria Solo, Jawa Tengah</p>
       </section>
 
       <Footer />

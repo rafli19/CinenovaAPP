@@ -36,7 +36,7 @@ export const registerUser = async (
   name,
   email,
   password,
-  password_confirmation
+  password_confirmation,
 ) => {
   try {
     const response = await api.post("/register", {
