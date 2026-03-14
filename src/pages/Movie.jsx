@@ -126,17 +126,12 @@ const Movie = () => {
                   <div className="bg-black aspect-[2/3] rounded mb-3 overflow-hidden max-w-full">
                     {movie.poster ? (
                       <img
-<<<<<<< HEAD
-                        src={`https://rafvoid.my.id  ${movie.poster.replace("/posters", "")}`}
-=======
-                        src={`https://api.rafvoid.my.id${movie.poster}`}
->>>>>>> 606cea6b0d7199bdc9b51c03f3bb8e86d609ed5e
+                        src={`https://api.rafvoid.my.id/storage${movie.poster.replace("/storage", "")}`}
                         alt={movie.title}
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          e.target.src = "/images/no-poster.png";
+                          e.target.src = "/no-poster.png";
                         }}
-                        loading="lazy"
                       />
                     ) : (
                       <img
